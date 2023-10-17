@@ -24,15 +24,16 @@ export default function Homepage() {
   const data = useLoaderData();
   return (
     <div className="home">
+    
       <FeaturedCollection collection={data.featuredCollection} />
       <FeaturedProducts products={data.featuredProducts} />
       <RecommendedProducts products={data.recommendedProducts} />
+      
     </div>
   );
 }
 
 function FeaturedCollection({collection}) {
-  console.log(collection);
   if (!collection) return null;
   const image = collection?.image;
   return (

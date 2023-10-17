@@ -3,21 +3,43 @@ import {Suspense} from 'react';
 
 export function Header({header, isLoggedIn, cart}) {
   const {shop, menu} = header;
-  return (
-    <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
-      </NavLink>
-      <HeaderMenu menu={menu} viewport="desktop" />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
-    </header>
-  );
+
+  if (shop.brand.logo !=  null) {
+    return (
+      <header className="header">
+          <div className="container">
+           <div className='header-container'>
+              <HeaderMenu menu={menu} viewport="desktop"/>
+              <NavLink prefetch="intent" to="/" style={activeLinkStyle} className='Header__FlexItem' end>
+                <img src={shop.brand.logo.image.url} className="logo" alt={shop.name} loading='lazy' />
+              </NavLink>
+              <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+            </div>
+          </div>
+      </header>
+    );
+  } else {
+    return (
+      <header className="header">
+           <div className="container">
+            <div className='header-container'>
+                <HeaderMenu menu={menu} viewport="desktop" />
+                <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
+                <strong>{shop.name}</strong>
+                </NavLink>
+                <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+            </div>
+           </div>
+      </header>
+    );
+  }
+
 }
 
 export function HeaderMenu({menu, viewport}) {
   const [root] = useMatches();
   const publicStoreDomain = root?.data?.publicStoreDomain;
-  const className = `header-menu-${viewport}`;
+  const className = `header-menu-${viewport} Header__FlexItem Header__FlexItem--fill`;
 
   function closeAside(event) {
     if (viewport === 'mobile') {
@@ -39,9 +61,9 @@ export function HeaderMenu({menu, viewport}) {
           Home
         </NavLink>
       )}
-      {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
+   
+      {(menu).items.map((item) => {
         if (!item.url) return null;
-
         // if the url is internal, we strip the domain
         const url =
           item.url.includes('myshopify.com') ||
@@ -49,17 +71,38 @@ export function HeaderMenu({menu, viewport}) {
             ? new URL(item.url).pathname
             : item.url;
         return (
-          <NavLink
-            className="header-menu-item"
-            end
-            key={item.id}
-            onClick={closeAside}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
+          <div className="menu_item" key={item.id}>
+              <NavLink
+              className="header-menu-item menu-link"
+              end
+        
+              onClick={closeAside}
+              prefetch="intent"
+              style={activeLinkStyle}
+              to={url}
+              >
+
+              {item.title}
+
+              { item?.items.length > 0 && (
+                <div className='dropdown-menu'>
+                  {(item).items.map((subitem) => {
+                        return (
+                        <NavLink
+                          className="header-menu-subitem menu-link"
+                          end
+                          key={subitem.id}
+                          to={subitem.url}
+                        >
+                          {subitem.title}
+                        </NavLink>
+                        )
+                  })}
+                </div>
+              )}
+              </NavLink>
+          </div>
+     
         );
       })}
     </nav>
@@ -68,7 +111,7 @@ export function HeaderMenu({menu, viewport}) {
 
 function HeaderCtas({isLoggedIn, cart}) {
   return (
-    <nav className="header-ctas" role="navigation">
+    <nav className="header-ctas Header__FlexItem Header__FlexItem--fill" role="navigation">
       <HeaderMenuMobileToggle />
       <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
         {isLoggedIn ? 'Account' : 'Sign in'}
@@ -108,51 +151,9 @@ function CartToggle({cart}) {
   );
 }
 
-const FALLBACK_HEADER_MENU = {
-  id: 'gid://shopify/Menu/199655587896',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461609500728',
-      resourceId: null,
-      tags: [],
-      title: 'Collections',
-      type: 'HTTP',
-      url: '/collections',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461609533496',
-      resourceId: null,
-      tags: [],
-      title: 'Blog',
-      type: 'HTTP',
-      url: '/blogs/journal',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461609566264',
-      resourceId: null,
-      tags: [],
-      title: 'Policies',
-      type: 'HTTP',
-      url: '/policies',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461609599032',
-      resourceId: 'gid://shopify/Page/92591030328',
-      tags: [],
-      title: 'About',
-      type: 'PAGE',
-      url: '/pages/about',
-      items: [],
-    },
-  ],
-};
-
 function activeLinkStyle({isActive, isPending}) {
   return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'black',
+    fontWeight: isActive ? 'bold' : "normal",
+    color: isPending ? 'grey' : 'white',
   };
 }
