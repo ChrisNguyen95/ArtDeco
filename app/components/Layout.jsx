@@ -8,20 +8,35 @@ import {
   PredictiveSearchForm,
   PredictiveSearchResults,
 } from '~/components/Search';
+import React, { useState, useEffect } from 'react';
+import Preload from './Preload';
+
 
 export function Layout({cart, children = null, footer, header, isLoggedIn}) {
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+  }, []);
   return (
     <>
-      <CartAside cart={cart} />
-      <SearchAside />
-      <MobileMenuAside menu={header.menu} />
-      <Header header={header} cart={cart} isLoggedIn={isLoggedIn} />
-      <main>{children}</main>
-      <Suspense>
-        <Await resolve={footer}>
-          {(footer) => <Footer menu={footer.menu} />}
-        </Await>
-      </Suspense>
+     {isLoading ? (
+        <Preload />
+      ) : (
+        <>
+          <CartAside cart={cart} />
+          <SearchAside />
+          <MobileMenuAside menu={header.menu} />
+          <Header header={header} cart={cart} isLoggedIn={isLoggedIn} />
+          <main>{children}</main>
+          <Suspense>
+            <Await resolve={footer}>
+              {(footer) => <Footer menu={footer.menu} />}
+            </Await>
+          </Suspense>
+        </>
+       )}
     </>
   );
 }

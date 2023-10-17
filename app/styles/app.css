@@ -130,6 +130,91 @@ aside li {
   margin: 0 auto;
   padding: 0 20px;
 }
+.preload-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: var(--color-dark);
+}
+.preload-spinner {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+
+:root{
+  --c_01: #ff1ead;
+  --c_02: #000;
+  --c_03: #fff;
+  --size: 12vmin;
+  --loader_w: calc(var(--size) * 6);
+  --loader_h: calc(var(--size) * 2.3);
+  --bubble: calc(var(--size) * 1.5);
+  --shine: calc(var(--size) / 5);
+}
+.demo{ background-color: var(--c_02); }
+.loader{
+    font-family: 'Major Mono Display', monospace;
+    padding: 65px 0 0;
+    margin: 20px auto 0;
+    position: relative;
+}
+.bubble{
+    background-color: var(--c_01);
+    width: var(--bubble);
+    height: var(--bubble);
+    border-radius: 50%;
+    outline: 1px solid transparent;
+    transform: scale(0.5) translateY(50%);
+    position: absolute;
+    bottom: calc(var(--size) / 1.3);
+    left: 50%;
+    animation: blow 1.3s linear alternate infinite;
+}
+.bubble__shine{
+    background-color: var(--c_03);
+    position: absolute;
+}
+.bubble__shine--lg{
+    width: var(--shine);
+    height: calc(var(--shine) * 2.5);
+    border-radius: 100% 50% 40% 100% / 50% 30% 30% 100%;
+    transform: rotateZ(60deg);
+    top: 2%;
+    left: 26%;
+}
+.bubble__shine--sm{
+    width: calc(var(--shine) / 2);
+    height: calc(var(--shine) / 2);
+    border-radius: 50% 50% 40% 100% / 50% 50% 50% 100%;
+    top: 32%;
+    left: 9%;
+}
+.text{
+    color: var(--c_01);
+    font-size: var(--size);
+    text-align: center;
+    text-transform: uppercase;
+    margin: 0;
+}
+.text__highlight{ color: var(--c_03); }
+@keyframes blow{
+  0%{ transform: scale(0.5) translateY(50%); }
+  20%{ transform: scale(0.6) translateY(33%); }
+  40%{ transform: scale(0.7) translateY(21%); }
+  60%{ transform: scale(0.8) translateY(12%); }
+  80%{ transform: scale(0.9) translateY(5%); }
+  93%, 100%{ transform: scale(1) translateY(0) translateZ(0); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 
 /*
