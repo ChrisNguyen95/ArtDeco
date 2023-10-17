@@ -75,7 +75,6 @@ export function HeaderMenu({menu, viewport}) {
               <NavLink
               className="header-menu-item menu-link"
               end
-        
               onClick={closeAside}
               prefetch="intent"
               style={activeLinkStyle}
@@ -85,7 +84,7 @@ export function HeaderMenu({menu, viewport}) {
               {item.title}
 
               { item?.items.length > 0 && (
-                <div className='dropdown-menu'>
+                <div className='dropdown-menu' key={'drowdown--item' + item.id}>
                   {(item).items.map((subitem) => {
                         return (
                         <NavLink
