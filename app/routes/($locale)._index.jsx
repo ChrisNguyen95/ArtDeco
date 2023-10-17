@@ -13,7 +13,11 @@ export async function loader({context}) {
   const featuredCollection = collections.nodes[0];
   const recommendedProducts = storefront.query(RECOMMENDED_PRODUCTS_QUERY);
 
-  return defer({featuredCollection, recommendedProducts});
+  const featuredProducts = storefront.query(FEATURED_PRODUCTS_QUERY);
+
+
+
+  return defer({featuredCollection, recommendedProducts, featuredProducts});
 }
 
 export default function Homepage() {
@@ -21,26 +25,34 @@ export default function Homepage() {
   return (
     <div className="home">
       <FeaturedCollection collection={data.featuredCollection} />
+      <FeaturedProducts products={data.featuredProducts} />
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
   );
 }
 
 function FeaturedCollection({collection}) {
+  console.log(collection);
   if (!collection) return null;
   const image = collection?.image;
   return (
-    <Link
-      className="featured-collection"
-      to={`/collections/${collection.handle}`}
-    >
-      {image && (
-        <div className="featured-collection-image">
-          <Image data={image} sizes="100vw" />
-        </div>
-      )}
-      <h1>{collection.title}</h1>
-    </Link>
+    <div className="featured-collection">
+      <Link
+          className="featured-collection"
+          to={`/collections/${collection.handle}`}
+        >
+          {image && (
+            <div className="featured-collection-image">
+              <Image data={image} sizes="100vw" />
+            </div>
+          )}
+          <h1>{collection.title}</h1>
+        </Link>
+        <Suspense fallback={<div>Loading...</div>}>
+       
+      </Suspense>
+    </div>
+  
   );
 }
 
@@ -48,6 +60,40 @@ function RecommendedProducts({products}) {
   return (
     <div className="recommended-products">
       <h2>Recommended Products</h2>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Await resolve={products}>
+          {({products}) => (
+            <div className="recommended-products-grid">
+              {products.nodes.map((product) => (
+                <Link
+                  key={product.id}
+                  className="recommended-product"
+                  to={`/products/${product.handle}`}
+                >
+                  <Image
+                    data={product.images.nodes[0]}
+                    aspectRatio="1/1"
+                    sizes="(min-width: 45em) 20vw, 50vw"
+                  />
+                  <h4>{product.title}</h4>
+                  <small>
+                    <Money data={product.priceRange.minVariantPrice} />
+                  </small>
+                </Link>
+              ))}
+            </div>
+          )}
+        </Await>
+      </Suspense>
+      <br />
+    </div>
+  );
+}
+
+function FeaturedProducts({products}) {
+  return (
+    <div className="recommended-products">
+      <h2>Featured Products</h2>
       <Suspense fallback={<div>Loading...</div>}>
         <Await resolve={products}>
           {({products}) => (
@@ -127,6 +173,37 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
     products(first: 4, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...RecommendedProduct
+      }
+    }
+  }
+`;
+
+const FEATURED_PRODUCTS_QUERY = `#graphql
+  fragment FeaturedProduct on Product {
+    id
+    title
+    handle
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    images(first: 1) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
+      }
+    }
+  }
+  query FeaturedProducts ($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    products(first: 4, sortKey: BEST_SELLING, reverse: true) {
+      nodes {
+        ...FeaturedProduct
       }
     }
   }
